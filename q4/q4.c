@@ -34,11 +34,7 @@ int main(void) {
 		}
 
 		result = fn(a, b);
-        if (result < 0) {
-            final_result = 0;
-        } else {
-            final_result = result;
-        }
+		final_result = result;
 		printf("%d\n", final_result);
 
 		dlclose(handle);
