@@ -15,7 +15,37 @@ main:
 
     mv s0,a0
     mv s1,a1
+    li s6,1
     addi s2,s0,-1
+
+    beqz s0,.ret0
+    ld t0,0(s1)
+    beqz t0,.arg_ready
+
+    lbu t1,0(t0)
+    li t2,'-'
+    beq t1,t2,.arg_neg0
+
+    li t2,'0'
+    blt t1,t2,.arg_ready
+    li t2,'9'
+    bgt t1,t2,.arg_ready
+
+    li s6,0
+    mv s2,s0
+    j .arg_ready
+
+.arg_neg0:
+    lbu t1,1(t0)
+    li t2,'0'
+    blt t1,t2,.arg_ready
+    li t2,'9'
+    bgt t1,t2,.arg_ready
+    li s6,0
+    mv s2,s0
+
+.arg_ready:
+    bge zero,s2,.ret0
 
 
     slli a0,s2,2
@@ -32,13 +62,10 @@ main:
     call malloc
     mv s5,a0
 
-    li s6,-1
-
-
     li t0,0
 .prs_lp:
         bge t0,s2,.prs_done
-        addi t1,t0,1
+        add t1,t0,s6
         slli t1,t1,3
         add t1,s1,t1
         ld a0,0(t1)
@@ -54,6 +81,7 @@ main:
         j .prs_lp
 
 .prs_done:
+    li s6,-1
         li t0,0
 .ri_lp:
         bge t0,s2,.ri_done
@@ -134,7 +162,8 @@ main:
     li a0,'\n'
    call putchar
 
-        li a0,0
+.ret0:
+    li a0,0
         ld ra,56(sp)
         ld s0,48(sp)
          ld s1,40(sp)
